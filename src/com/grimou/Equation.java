@@ -24,13 +24,11 @@ public class Equation {
         //l'ordre des boucles représente la priorité des opérations
 
 
-        //on gère tout les parenthèses
+        //on gère toutes les parenthèses
         String parentesisRegex = "\\(.*\\)";
         regex = Pattern.compile(parentesisRegex);
         matcher = regex.matcher(finalResult);
         while (matcher.find()) {
-            int firstIndex = finalResult.lastIndexOf("(");
-            int lastIndex = finalResult.substring(firstIndex).indexOf(")");
             finalResult = finalResult.substring(0, matcher.start()) + this.solve(finalResult.substring(matcher.start()+1, matcher.end()-1)) + finalResult.substring(matcher.end());
         }
 
@@ -45,7 +43,7 @@ public class Equation {
             matcher = regex.matcher(finalResult);
         }
 
-        String firstPriorityRegex = "(" + number + ")([\\^])(\" + number + \")";
+        String firstPriorityRegex = "(" + number + ")([\\^])(" + number + ")";
         regex = Pattern.compile(firstPriorityRegex);
         matcher = regex.matcher(finalResult);
         while (matcher.find()) {
@@ -54,32 +52,26 @@ public class Equation {
             matcher = regex.matcher(finalResult);
         }
 
-        String secondPriorityRegex = "(\" + number + \")([*/])(\" + number + \")";
+        String secondPriorityRegex = "(" + number + ")([*/])(" + number + ")";
         regex = Pattern.compile(secondPriorityRegex);
         matcher = regex.matcher(finalResult);
         while (matcher.find()) {
-            float result;
+            double result;
             if (matcher.group(2).equals("*")) {
                 result = Float.parseFloat(matcher.group(1)) * Float.parseFloat(matcher.group(3));
             } else {
-                try {
-                    result = Float.parseFloat(matcher.group(1)) / Float.parseFloat(matcher.group(3));
-                } catch (Exception e) {
-                    //divided by zero
-                    //TODO
-                    return null;
-                }
+                result = Float.parseFloat(matcher.group(1)) / Float.parseFloat(matcher.group(3));
             }
             finalResult = finalResult.substring(0, matcher.start()) + result + finalResult.substring(matcher.end());
             matcher = regex.matcher(finalResult);
         }
 
         //addition et soustraction
-        String thirdPriorityRegex = "(\" + number + \")([+\\-])(\" + number + \")";
+        String thirdPriorityRegex = "(" + number + ")([+\\-])(" + number + ")";
         regex = Pattern.compile(thirdPriorityRegex);
         matcher = regex.matcher(finalResult);
         while (matcher.find()) {
-            float result;
+            double result;
             if (matcher.group(2).equals("+")) {
                 result = Float.parseFloat(matcher.group(1)) + Float.parseFloat(matcher.group(3));
             } else {
@@ -88,7 +80,6 @@ public class Equation {
             finalResult = finalResult.substring(0, matcher.start()) + result + finalResult.substring(matcher.end());
             matcher = regex.matcher(finalResult);
         }
-
 
         return finalResult;
     }
